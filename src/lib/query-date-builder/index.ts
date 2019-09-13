@@ -1,8 +1,8 @@
 type queryMark = ">" | ">=" | "<" | "<=" | ".." | "..*" | "*..";
 
 export const queryDateBuilder = (query: queryMark, from: Date, to?: Date) => {
-  const formatedFrom = from.toISOString().slice(0, 9);
-  const formatedTo = to && to.toISOString().slice(0, 9);
+  const formatedFrom = from.toISOString().slice(0, 10);
+  const formatedTo = to && to.toISOString().slice(0, 10);
 
   if (query === ">" || query === "<" || query === "<=" || query === ">=") {
     return query + formatedFrom;
