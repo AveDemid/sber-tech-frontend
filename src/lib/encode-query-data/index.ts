@@ -3,7 +3,7 @@ export const encodeQueryData = (data: {
 }) => {
   const ret = [];
   for (const d in data) {
-    ret.push(`${d}=${data[d]}`);
+    data[d] && ret.push(`${d}=${data[d]}`);
   }
   return ret.join("&");
 };
