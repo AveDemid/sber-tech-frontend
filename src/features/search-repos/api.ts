@@ -7,6 +7,7 @@ interface Config {
   lang: string;
   sort?: Sort;
   created?: string;
+  license?: string;
   page?: number;
   perPage?: number;
 }
@@ -15,14 +16,24 @@ export const searchRepos = ({
   lang,
   sort,
   created,
+  license,
   page = 1,
   perPage = 0
 }: Config) => {
+  // TODO: found better soluction
+  const listOfQ = [];
+  const qLang = lang && `language:${lang}`;
+  const qCreated = created && `created:${created}`;
+  const qLicense = license && `license:${license}`;
+
+  listOfQ.push(qLang, qCreated, qLicense);
+
+  const q = listOfQ.filter(Boolean).join("+");
+
   const params = {
-    q: `language:${lang}`,
-    sort,
-    created,
+    q,
     page,
+    sort,
     ["per_page"]: perPage
   };
 
