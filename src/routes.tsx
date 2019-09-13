@@ -4,13 +4,13 @@ import { renderRoutes } from "react-router-config";
 
 const routes = [
   {
-    path: "/",
-    exact: true,
-    component: () => <h1>Hello from root routes :)</h1>
+    component: () => <h1>Hello sber-tech :)</h1>,
+    path: "/home",
+    exact: true
   },
   {
     component: () => <Redirect to="/" />
   }
 ];
 
-export const RootRoutes = () => <>{renderRoutes(routes)}</>;
+export const Routes = () => <>{renderRoutes(routes)}</>;

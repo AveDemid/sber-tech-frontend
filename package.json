@@ -1,5 +1,5 @@
 {
-  "name": "react-boilerplate",
+  "name": "sber-tech-frontend",
   "version": "0.0.1",
   "description": "My own react starter-kit",
   "main": "index.js",
@@ -11,26 +11,29 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/AveDemid/react-boilerplate.git"
+    "url": "git+https://github.com/AveDemid/sber-tech-frontend.git"
   },
   "author": "Ave Demid",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/AveDemid/react-boilerplate/issues"
+    "url": "https://github.com/AveDemid/sber-tech-frontend/issues"
   },
-  "homepage": "https://github.com/AveDemid/react-boilerplate#readme",
+  "homepage": "https://github.com/AveDemid/sber-tech-frontend#readme",
   "browserslist": [
     "> 0.2%",
     "not op_mini all",
     "defaults"
   ],
   "dependencies": {
-    "effector": "^20.1.2",
-    "effector-react": "^20.3.0",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
+    "react-redux": "^7.1.1",
     "react-router-config": "^5.0.1",
     "react-router-dom": "^5.0.1",
+    "recompose": "^0.30.0",
+    "redux": "^4.0.4",
+    "redux-symbiote": "^3.2.0",
+    "reselect": "^4.0.0",
     "styled-components": "^4.3.2",
     "styled-reboot": "^4.0.3"
   },
@@ -40,6 +43,7 @@
     "@babel/register": "^7.6.0",
     "@types/react": "^16.9.2",
     "@types/react-dom": "^16.9.0",
+    "@types/react-redux": "^7.1.2",
     "@types/react-router-config": "^5.0.0",
     "@types/react-router-dom": "^4.3.5",
     "@types/styled-components": "^4.1.19",
@@ -57,8 +61,9 @@
     "eslint-plugin-react-hooks": "^2.0.1",
     "html-webpack-plugin": "^4.0.0-beta.8",
     "prettier": "^1.18.2",
+    "redux-thunk": "^2.3.0",
     "typescript": "^3.6.3",
-    "webpack": "^4.39.3",
+    "webpack": "^4.40.2",
     "webpack-cli": "^3.3.8",
     "webpack-dev-server": "^3.8.0"
   }
