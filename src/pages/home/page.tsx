@@ -4,6 +4,7 @@ import { useDebounce } from "use-debounce";
 import Select from "react-select";
 
 import { effects, selecotrs, RepoList } from "@features/search-repos";
+import { Paginator } from "@features/paginator";
 
 import { getDateFromThePast } from "@lib/date-builder";
 import { queryDateBuilder } from "@lib/query-date-builder";
@@ -21,10 +22,15 @@ export const HomePage = () => {
   const isFetching = useSelector(selecotrs.getFetchingStatus);
   const itemsList = useSelector(selecotrs.getItemsList);
   const error = useSelector(selecotrs.getError);
+  const isIncompleteResults = useSelector(selecotrs.getIncompleteResults);
+  const totalCount = useSelector(selecotrs.getTotalCount);
 
   const [license, setLicense] = useState<OptionType | null>(null);
   const [filter, setFilter] = useState<string>("");
   const [debouncedFilter] = useDebounce(filter, 500);
+  const [currentPage, setCurrentPage] = useState(0);
+
+  console.log(currentPage);
 
   useEffect(() => {
     const createdDate = getDateFromThePast({ days: 30 });
@@ -37,11 +43,11 @@ export const HomePage = () => {
         created: createdQuery,
         license: licenseValue,
         sort: "star",
-        page: 1,
+        page: currentPage + 1,
         perPage: 100
       })
     );
-  }, [dispatch, license]);
+  }, [currentPage, dispatch, license]);
 
   const getSpinner = useMemo(() => {
     const condition = isFetching === "loading";
@@ -109,6 +115,24 @@ export const HomePage = () => {
     return condition && filteredList && <RepoList list={filteredList} />;
   };
 
+  const getPaginator = useMemo(() => {
+    const condition =
+      !isIncompleteResults && isFetching === "done" && totalCount;
+
+    return (
+      condition &&
+      totalCount && (
+        <Paginator
+          pageCount={totalCount / 100}
+          pageRangeDisplayed={3}
+          marginPagesDisplayed={0}
+          initialPage={currentPage}
+          onPageChange={setCurrentPage}
+        />
+      )
+    );
+  }, [currentPage, isFetching, isIncompleteResults, totalCount]);
+
   return (
     <MainTemplate>
       <Container size="medium">
@@ -116,6 +140,7 @@ export const HomePage = () => {
         {getFilterByTitle}
         {getSelectLicense}
         {getRepoList()}
+        {getPaginator}
         {getError}
       </Container>
     </MainTemplate>
