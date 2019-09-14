@@ -36,7 +36,8 @@
     "redux-starter-kit": "^0.7.0",
     "reselect": "^4.0.0",
     "styled-components": "^4.3.2",
-    "styled-reboot": "^4.0.3"
+    "styled-reboot": "^4.0.3",
+    "use-debounce": "^3.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.6.0",

@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useDebounce } from "use-debounce";
 import Select from "react-select";
 
 import { effects, selecotrs, RepoList } from "@features/search-repos";
@@ -7,24 +8,24 @@ import { effects, selecotrs, RepoList } from "@features/search-repos";
 import { getDateFromThePast } from "@lib/date-builder";
 import { queryDateBuilder } from "@lib/query-date-builder";
 import { LICENSE } from "@lib/license";
+import { filterReposByTitle } from "@lib/filter-repos-by-title";
 
-import { Container, Text, Spinner } from "@ui/atoms";
+import { Container, Text, Spinner, Input, FormGroup } from "@ui/atoms";
 import { MainTemplate } from "@ui/templates";
 
-// Have no idea where to plase :|
 type OptionType = { label: string; value: string };
 
 export const HomePage = () => {
-  // Redux
   const dispatch = useDispatch();
+
   const isFetching = useSelector(selecotrs.getFetchingStatus);
   const itemsList = useSelector(selecotrs.getItemsList);
   const error = useSelector(selecotrs.getError);
 
-  // License
   const [license, setLicense] = useState<OptionType | null>(null);
+  const [filter, setFilter] = useState<string>("");
+  const [debouncedFilter] = useDebounce(filter, 500);
 
-  // Fetching data
   useEffect(() => {
     const createdDate = getDateFromThePast({ days: 30 });
     const createdQuery = queryDateBuilder(">", createdDate);
@@ -42,13 +43,13 @@ export const HomePage = () => {
     );
   }, [dispatch, license]);
 
-  const getSpinner = () => {
+  const getSpinner = useMemo(() => {
     const condition = isFetching === "loading";
 
     return condition && <Spinner />;
-  };
+  }, [isFetching]);
 
-  const getSelectLicense = () => {
+  const getSelectLicense = useMemo(() => {
     const licenseKeys = Object.keys(LICENSE);
     const licenseValue = Object.values(LICENSE);
 
@@ -61,38 +62,61 @@ export const HomePage = () => {
 
     return (
       condition && (
-        <Select
-          options={options}
-          value={license}
-          onChange={value => setLicense(value as OptionType)}
-          getOptionLabel={option => option.label}
-          getOptionValue={option => option.value}
-          placeholder="Select license..."
-          isClearable
-        />
+        <FormGroup>
+          <Select
+            options={options}
+            value={license}
+            onChange={value => setLicense(value as OptionType)}
+            getOptionLabel={option => option.label}
+            getOptionValue={option => option.value}
+            placeholder="Select license..."
+            isClearable
+          />
+        </FormGroup>
       )
     );
-  };
+  }, [isFetching, license]);
+
+  const getFilterByTitle = useMemo(() => {
+    const condition = isFetching === "done";
+
+    return (
+      condition && (
+        <FormGroup>
+          <Input
+            type="text"
+            value={filter}
+            onChange={event => setFilter(event.target.value)}
+            placeholder="Filter repos by title"
+          />
+        </FormGroup>
+      )
+    );
+  }, [filter, isFetching]);
+
+  const getError = useMemo(() => {
+    const condition = error && isFetching === "failed";
+
+    return condition && <Text textType="large">{error}</Text>;
+  }, [error, isFetching]);
 
   const getRepoList = () => {
     const condition = isFetching === "done";
 
-    return condition && itemsList && <RepoList list={itemsList} />;
-  };
+    const filteredList =
+      itemsList && filterReposByTitle(itemsList, debouncedFilter);
 
-  const getError = () => {
-    const condition = error && isFetching === "failed";
-
-    return condition && <Text textType="large">{error}</Text>;
+    return condition && filteredList && <RepoList list={filteredList} />;
   };
 
   return (
     <MainTemplate>
       <Container size="medium">
-        {getSpinner()}
-        {getSelectLicense()}
+        {getSpinner}
+        {getFilterByTitle}
+        {getSelectLicense}
         {getRepoList()}
-        {getError()}
+        {getError}
       </Container>
     </MainTemplate>
   );

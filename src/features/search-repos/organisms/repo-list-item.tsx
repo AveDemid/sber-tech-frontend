@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import styled from "styled-components";
 
 import { Repo } from "./../types";
@@ -16,61 +16,64 @@ export const RepoListItem = ({ item }: { item: Repo }) => {
   const license = item.license && item.license.name;
   const description = item.description;
 
-  return (
-    <RepoListItemBox>
-      <Left>
-        <AvatarContainer>
-          <AvatarWithSpinner url={avatarUrl} alt={userName} />
-        </AvatarContainer>
+  return useMemo(
+    () => (
+      <RepoListItemBox>
+        <Left>
+          <AvatarContainer>
+            <AvatarWithSpinner url={avatarUrl} alt={userName} />
+          </AvatarContainer>
 
-        <TextContainer
-          fontWeight="200"
-          textType="extraSmall"
-          withoutMargin
-          overflowEllipsis
-        >
-          {repoName}
-        </TextContainer>
-      </Left>
+          <TextContainer
+            fontWeight="200"
+            textType="extraSmall"
+            withoutMargin
+            overflowEllipsis
+          >
+            {repoName}
+          </TextContainer>
+        </Left>
 
-      <Right>
-        <TextContainer
-          fontWeight="200"
-          textType="large"
-          withoutMargin
-          overflowEllipsis
-        >
-          {repoName}
-        </TextContainer>
+        <Right>
+          <TextContainer
+            fontWeight="200"
+            textType="large"
+            withoutMargin
+            overflowEllipsis
+          >
+            {repoName}
+          </TextContainer>
 
-        <TextContainer
-          fontWeight="300"
-          textType="medium"
-          withoutMargin
-          overflowEllipsis
-        >
-          Stars: {stars}
-        </TextContainer>
+          <TextContainer
+            fontWeight="300"
+            textType="medium"
+            withoutMargin
+            overflowEllipsis
+          >
+            Stars: {stars}
+          </TextContainer>
 
-        <TextContainer
-          fontWeight="300"
-          textType="medium"
-          withoutMargin
-          overflowEllipsis
-        >
-          License: {license ? license : "No license"}
-        </TextContainer>
+          <TextContainer
+            fontWeight="300"
+            textType="medium"
+            withoutMargin
+            overflowEllipsis
+          >
+            License: {license ? license : "No license"}
+          </TextContainer>
 
-        <TextContainer
-          fontWeight="300"
-          textType="medium"
-          withoutMargin
-          overflowEllipsis
-        >
-          Description: {description ? description : "No description"}
-        </TextContainer>
-      </Right>
-    </RepoListItemBox>
+          <TextContainer
+            fontWeight="300"
+            textType="medium"
+            withoutMargin
+            overflowEllipsis
+          >
+            Description: {description ? description : "No description"}
+          </TextContainer>
+        </Right>
+      </RepoListItemBox>
+    ),
+    [avatarUrl, description, license, repoName, stars, userName]
   );
 };
 
@@ -97,7 +100,7 @@ const Left = styled("div")`
   align-items: center;
   flex-direction: column;
   @media (min-width: ${breakpoints.small}) {
-    width: 9.6rem;
+    min-width: 9.6rem;
     margin-left: 1.6rem;
     margin-right: 2.4rem;
     padding-top: 1.2rem;
