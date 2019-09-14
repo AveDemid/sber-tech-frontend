@@ -1,26 +1,38 @@
 import React, { useEffect } from "react";
-import { searchRepos } from "@features/search-repos/api";
+import { useDispatch, useSelector } from "react-redux";
+
+import { effects, selecotrs } from "@features/search-repos";
+
 import { getDateFromThePast } from "@lib/date-builder";
 import { queryDateBuilder } from "@lib/query-date-builder";
 import { LICENSE } from "@lib/license";
 
 export const HomePage = () => {
+  const dispatch = useDispatch();
+  const isFetching = useSelector(selecotrs.getFetchingStatus);
+
+  console.log(isFetching);
+
   useEffect(() => {
     const createdDate = getDateFromThePast({ days: 30 });
     const createdQuery = queryDateBuilder(">", createdDate);
     const license = Object.keys(LICENSE)[0];
 
-    searchRepos({
-      // query
-      lang: "javascript",
-      created: createdQuery,
-      license: license,
-      // other
-      sort: "star",
-      page: 1,
-      perPage: 100
-    }).then(response => console.log(response));
-  }, []);
+    dispatch(
+      effects.searchReposEffect({
+        lang: "javascript",
+        created: createdQuery,
+        license: license,
+        sort: "star",
+        page: 2,
+        perPage: 100
+      })
+    );
+  }, [dispatch]);
 
-  return <h1>Hello from Home page!</h1>;
+  return (
+    <div>
+      <h1>Hello world :)</h1>
+    </div>
+  );
 };

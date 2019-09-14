@@ -15,5 +15,8 @@ export const request = <T>(
 
   return fetch(config)
     .then(handleError)
-    .then(response => handleType<T>(response));
+    .then(response => handleType<T>(response))
+    .catch(error => {
+      throw error;
+    });
 };

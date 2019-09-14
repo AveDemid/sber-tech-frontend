@@ -1,6 +1,6 @@
 export const handleError = (response: Response) => {
   if (!response.ok) {
-    throw Error(response.statusText);
+    throw new Error(response.statusText) as Error;
   }
   return response;
 };

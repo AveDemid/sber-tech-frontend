@@ -1,25 +1,15 @@
 import { request } from "@lib/request";
 import { encodeQueryData } from "@lib/encode-query-data";
+import { SearchReposApiConfiguration } from "./types";
 
-type Sort = "star" | "fork" | "help-wanted-issues" | "updated";
-
-interface Config {
-  lang: string;
-  sort?: Sort;
-  created?: string;
-  license?: string;
-  page?: number;
-  perPage?: number;
-}
-
-export const searchRepos = ({
+export const searchRepos = <T>({
   lang,
   sort,
   created,
   license,
   page = 1,
   perPage = 0
-}: Config) => {
+}: SearchReposApiConfiguration) => {
   // TODO: found better soluction
   const listOfQ = [];
   const qLang = lang && `language:${lang}`;
@@ -32,14 +22,14 @@ export const searchRepos = ({
 
   const params = {
     q,
-    page,
     sort,
+    page,
     ["per_page"]: perPage
   };
 
   const query = encodeQueryData(params);
 
-  return request(
+  return request<T>(
     "GET",
     "https://api.github.com",
     `/search/repositories?${query}`
