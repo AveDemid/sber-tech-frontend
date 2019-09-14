@@ -101,6 +101,7 @@ const Left = styled("div")`
   flex-direction: column;
   @media (min-width: ${breakpoints.small}) {
     min-width: 9.6rem;
+    max-width: 9.6rem;
     margin-left: 1.6rem;
     margin-right: 2.4rem;
     padding-top: 1.2rem;
