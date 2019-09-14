@@ -15,4 +15,6 @@ export const MainTemplate = ({ header, children }: MainTemplateProps) => (
 
 const Layout = styled("div")``;
 const Header = styled("div")``;
-const Content = styled("div")``;
+const Content = styled("div")`
+  margin: 3.2rem 0;
+`;
