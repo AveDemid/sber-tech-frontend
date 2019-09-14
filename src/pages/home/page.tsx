@@ -7,11 +7,13 @@ import { getDateFromThePast } from "@lib/date-builder";
 import { queryDateBuilder } from "@lib/query-date-builder";
 import { LICENSE } from "@lib/license";
 
+import { MainTemplate } from "@ui/templates";
+
 export const HomePage = () => {
   const dispatch = useDispatch();
-  const isFetching = useSelector(selecotrs.getFetchingStatus);
 
-  console.log(isFetching);
+  const isFetching = useSelector(selecotrs.getFetchingStatus);
+  const itemsById = useSelector(selecotrs.getItemsById);
 
   useEffect(() => {
     const createdDate = getDateFromThePast({ days: 30 });
@@ -24,15 +26,11 @@ export const HomePage = () => {
         created: createdQuery,
         license: license,
         sort: "star",
-        page: 2,
+        page: 1,
         perPage: 100
       })
     );
   }, [dispatch]);
 
-  return (
-    <div>
-      <h1>Hello world :)</h1>
-    </div>
-  );
+  return <MainTemplate>{isFetching}</MainTemplate>;
 };
