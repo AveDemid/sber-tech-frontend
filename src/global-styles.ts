@@ -16,6 +16,6 @@ export const GlobalStyles = createGlobalStyle`
   }
   body {
     font-size: 1.6rem;
-    font-family: "Open Sans", sans-serif;
+    font-family: "Helvetica Neue", "Helvetica", sans-serif;
   }
 `;

@@ -1,5 +1,8 @@
 import { combineReducers } from "redux";
+import { reducer as searchReposReducer } from "@features/search-repos";
 
 export const rootReducer = combineReducers({
-  just4Test: () => "hello world"
+  searchRepos: searchReposReducer
 });
+
+export type AppState = ReturnType<typeof rootReducer>;
