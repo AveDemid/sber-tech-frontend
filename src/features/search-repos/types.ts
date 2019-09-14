@@ -2,7 +2,7 @@ export interface SearchReposApiConfiguration {
   lang: string;
   sort?: "star" | "fork" | "help-wanted-issues" | "updated";
   created?: string;
-  license?: string;
+  license?: string | null;
   page?: number;
   perPage?: number;
 }
