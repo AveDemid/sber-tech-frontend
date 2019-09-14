@@ -1,24 +1,25 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { effects, selecotrs } from "@features/search-repos";
+import { effects, selecotrs, RepoList } from "@features/search-repos";
 
 import { getDateFromThePast } from "@lib/date-builder";
 import { queryDateBuilder } from "@lib/query-date-builder";
-import { LICENSE } from "@lib/license";
 
+import { Container, Text, Spinner } from "@ui/atoms";
 import { MainTemplate } from "@ui/templates";
 
 export const HomePage = () => {
   const dispatch = useDispatch();
 
   const isFetching = useSelector(selecotrs.getFetchingStatus);
-  const itemsById = useSelector(selecotrs.getItemsById);
+  const itemsList = useSelector(selecotrs.getItemsList);
+  const error = useSelector(selecotrs.getError);
 
   useEffect(() => {
     const createdDate = getDateFromThePast({ days: 30 });
     const createdQuery = queryDateBuilder(">", createdDate);
-    const license = Object.keys(LICENSE)[0];
+    const license = undefined;
 
     dispatch(
       effects.searchReposEffect({
@@ -32,5 +33,17 @@ export const HomePage = () => {
     );
   }, [dispatch]);
 
-  return <MainTemplate>{isFetching}</MainTemplate>;
+  return (
+    <MainTemplate>
+      <Container size="medium">
+        {isFetching === "loading" && <Spinner />}
+
+        {itemsList && isFetching === "done" && <RepoList list={itemsList} />}
+
+        {error && isFetching === "failed" && (
+          <Text textType="large">{error}</Text>
+        )}
+      </Container>
+    </MainTemplate>
+  );
 };

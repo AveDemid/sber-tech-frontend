@@ -43,11 +43,14 @@ interface TextProps {
   textType?: TextType;
   withoutMargin?: boolean;
   overflowEllipsis?: boolean;
+  fontWeight?: "100" | "200" | "300" | "400" | "500" | "600" | "800" | "900";
 }
 
 export const Text = styled("p")<TextProps>`
-  ${({ textType = "small", withoutMargin = false }) => css`
+  max-width: 100%;
+  ${({ textType = "small", withoutMargin = false, fontWeight = "400" }) => css`
     font-size: ${textStylesByType[textType].fontSize};
+    font-weight: ${fontWeight};
     line-height: ${textStylesByType[textType].lineHeight};
     margin-bottom: ${withoutMargin ? "0" : textStylesByType[textType].fontSize};
   `}
@@ -73,6 +76,7 @@ export const TextContainer = ({ children, ...props }: TextContainerProps) => (
 );
 
 export const TextContainerBox = styled("div")<TextContainerProps>`
+  max-width: 100%;
   ${({ textType = "small", withoutMargin = false }) => {
     return css`
       height: ${textStylesByType[textType].lineHeight};

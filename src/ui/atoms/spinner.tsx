@@ -14,6 +14,8 @@ const animation = keyframes`
 
 export const Spinner = styled("div")`
   color: #f58529;
+  display: flex;
+  justify-content: center;
   &::after {
     display: block;
     content: "⠋";

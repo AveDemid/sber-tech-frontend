@@ -32,6 +32,13 @@ const getItemsById = createSelector(
   root => root.itemsById
 );
 
+const getItemsList = createSelector(
+  [getItemsIds, getItemsById],
+  (itemsIds, itemsById) => {
+    return itemsIds && itemsById && itemsIds.map(id => itemsById[id]);
+  }
+);
+
 const getError = createSelector(
   rootSelector,
   root => root.error
@@ -43,5 +50,6 @@ export const selecotrs = {
   getTotalCount,
   getItemsIds,
   getItemsById,
+  getItemsList,
   getError
 };
