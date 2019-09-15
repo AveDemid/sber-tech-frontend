@@ -9,8 +9,17 @@ export const request = <T>(
 ): Promise<T> => {
   const uri = `${baseUrl}${url}`;
 
+  const user = "AveDemid";
+  const token = "1783c02002a2a594c03659ccaa4b97f23068e2d8";
+
+  const creds = `${user}:${token}`;
+  const auth = btoa(creds);
+
   const config = new Request(uri, {
-    method
+    method,
+    headers: {
+      Authorization: `Basic ${auth}`
+    }
   });
 
   return fetch(config)
