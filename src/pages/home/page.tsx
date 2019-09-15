@@ -1,10 +1,11 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useDebounce } from "use-debounce";
 import Select from "react-select";
 
 import { effects, selecotrs, RepoList } from "@features/search-repos";
 import { Paginator } from "@features/paginator";
+import { ConditionalList } from "@features/common";
 
 import { getDateFromThePast } from "@lib/date-builder";
 import { queryDateBuilder } from "@lib/query-date-builder";
@@ -17,21 +18,25 @@ import { MainTemplate } from "@ui/templates";
 type OptionType = { label: string; value: string };
 
 export const HomePage = () => {
+  // Redux
   const dispatch = useDispatch();
-
-  const isFetching = useSelector(selecotrs.getFetchingStatus);
+  const fetchingStatus = useSelector(selecotrs.getFetchingStatus);
   const itemsList = useSelector(selecotrs.getItemsList);
   const error = useSelector(selecotrs.getError);
   const isIncompleteResults = useSelector(selecotrs.getIncompleteResults);
   const totalCount = useSelector(selecotrs.getTotalCount);
 
+  // License
   const [license, setLicense] = useState<OptionType | null>(null);
+
+  // Title
   const [filter, setFilter] = useState<string>("");
   const [debouncedFilter] = useDebounce(filter, 500);
+
+  // CurrentPage
   const [currentPage, setCurrentPage] = useState(0);
 
-  console.log(currentPage);
-
+  // Fetcing Data
   useEffect(() => {
     const createdDate = getDateFromThePast({ days: 30 });
     const createdQuery = queryDateBuilder(">", createdDate);
@@ -49,13 +54,65 @@ export const HomePage = () => {
     );
   }, [currentPage, dispatch, license]);
 
-  const getSpinner = useMemo(() => {
-    const condition = isFetching === "loading";
+  // FILTER BY TITLE
+  const isFilterByTitleRender = useMemo(
+    () => fetchingStatus === "done" && itemsList && !!itemsList.length,
+    [fetchingStatus, itemsList]
+  );
 
-    return condition && <Spinner />;
-  }, [isFetching]);
+  const handleInputChage = useCallback(event => {
+    setFilter(event.target.value);
+  }, []);
 
-  const getSelectLicense = useMemo(() => {
+  const filteredList = useMemo(
+    () => itemsList && filterReposByTitle(itemsList, debouncedFilter),
+    [debouncedFilter, itemsList]
+  );
+
+  // CONDITIONAL LIST
+  const isLoaderRender = useMemo(() => fetchingStatus === "loading", [
+    fetchingStatus
+  ]);
+
+  const isListRender = useMemo(
+    () => fetchingStatus === "done" && itemsList && !!itemsList.length,
+    [fetchingStatus, itemsList]
+  );
+
+  const isListEmptyRender = useMemo(
+    () => fetchingStatus === "done" && filteredList && !filteredList.length,
+    [fetchingStatus, filteredList]
+  );
+
+  const isErrorRender = useMemo(() => fetchingStatus === "failed" && !!error, [
+    error,
+    fetchingStatus
+  ]);
+
+  // PAGINATOR
+  const isPaginatorRender = useMemo(
+    () =>
+      !isIncompleteResults &&
+      fetchingStatus === "done" &&
+      !debouncedFilter.length,
+    [debouncedFilter.length, fetchingStatus, isIncompleteResults]
+  );
+
+  const pageCount = useMemo(() => {
+    if (totalCount && totalCount > 1000) {
+      return 10;
+    } else {
+      return (totalCount && totalCount / 100) || 0;
+    }
+  }, [totalCount]);
+
+  // FILTER BY LICENSE
+  const isFilterByLicenseRender = useMemo(
+    () => fetchingStatus === "done" && itemsList && !!itemsList.length,
+    [fetchingStatus, itemsList]
+  );
+
+  const getFilterByLicnese = useMemo(() => {
     const licenseKeys = Object.keys(LICENSE);
     const licenseValue = Object.values(LICENSE);
 
@@ -64,84 +121,64 @@ export const HomePage = () => {
       label: licenseValue[index] as string
     }));
 
-    const condition = isFetching === "done";
-
     return (
-      condition && (
-        <FormGroup>
-          <Select
-            options={options}
-            value={license}
-            onChange={value => setLicense(value as OptionType)}
-            getOptionLabel={option => option.label}
-            getOptionValue={option => option.value}
-            placeholder="Select license..."
-            isClearable
-          />
-        </FormGroup>
-      )
-    );
-  }, [isFetching, license]);
-
-  const getFilterByTitle = useMemo(() => {
-    const condition = isFetching === "done";
-
-    return (
-      condition && (
-        <FormGroup>
-          <Input
-            type="text"
-            value={filter}
-            onChange={event => setFilter(event.target.value)}
-            placeholder="Filter repos by title"
-          />
-        </FormGroup>
-      )
-    );
-  }, [filter, isFetching]);
-
-  const getError = useMemo(() => {
-    const condition = error && isFetching === "failed";
-
-    return condition && <Text textType="large">{error}</Text>;
-  }, [error, isFetching]);
-
-  const getRepoList = () => {
-    const condition = isFetching === "done";
-
-    const filteredList =
-      itemsList && filterReposByTitle(itemsList, debouncedFilter);
-
-    return condition && filteredList && <RepoList list={filteredList} />;
-  };
-
-  const getPaginator = useMemo(() => {
-    const condition =
-      !isIncompleteResults && isFetching === "done" && totalCount;
-
-    return (
-      condition &&
-      totalCount && (
-        <Paginator
-          pageCount={totalCount / 100}
-          pageRangeDisplayed={3}
-          marginPagesDisplayed={0}
-          initialPage={currentPage}
-          onPageChange={setCurrentPage}
+      <FormGroup>
+        <Select
+          options={options}
+          value={license}
+          onChange={value => setLicense(value as OptionType)}
+          getOptionLabel={option => option.label}
+          getOptionValue={option => option.value}
+          placeholder="Select license..."
+          isClearable
         />
-      )
+      </FormGroup>
     );
-  }, [currentPage, isFetching, isIncompleteResults, totalCount]);
+  }, [license]);
 
   return (
     <MainTemplate>
       <Container size="medium">
-        {getSpinner}
-        {getFilterByTitle}
-        {getSelectLicense}
-        {getRepoList()}
-        {getPaginator}
-        {getError}
+        {isFilterByTitleRender && (
+          <FormGroup>
+            <Input
+              placeholder="Enter repository title"
+              value={filter}
+              onChange={handleInputChage}
+            />
+          </FormGroup>
+        )}
+
+        {isFilterByLicenseRender && getFilterByLicnese}
+
+        <ConditionalList
+          isLoaderRender={isLoaderRender}
+          isListRender={isListRender}
+          isListEmptyRender={isListEmptyRender}
+          isErrorRender={isErrorRender}
+          loader={<Spinner />}
+          list={<RepoList list={filteredList} />}
+          listEmpty={
+            <Text textType="large" fontWeight="100">
+              We did not find a match
+            </Text>
+          }
+          error={
+            <Text textType="large" fontWeight="100">
+              {error}
+            </Text>
+          }
+        />
+
+        {isPaginatorRender && (
+          <Paginator
+            pageCount={pageCount}
+            pageRangeDisplayed={0}
+            marginPagesDisplayed={3}
+            initialPage={currentPage}
+            onPageChange={setCurrentPage}
+          />
+        )}
       </Container>
     </MainTemplate>
   );
