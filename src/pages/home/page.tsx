@@ -18,19 +18,25 @@ import { MainTemplate } from "@ui/templates";
 type OptionType = { label: string; value: string };
 
 export const HomePage = () => {
+  // Redux
   const dispatch = useDispatch();
-
   const fetchingStatus = useSelector(selecotrs.getFetchingStatus);
   const itemsList = useSelector(selecotrs.getItemsList);
   const error = useSelector(selecotrs.getError);
   const isIncompleteResults = useSelector(selecotrs.getIncompleteResults);
   const totalCount = useSelector(selecotrs.getTotalCount);
 
+  // License
   const [license, setLicense] = useState<OptionType | null>(null);
+
+  // Title
   const [filter, setFilter] = useState<string>("");
   const [debouncedFilter] = useDebounce(filter, 500);
+
+  // CurrentPage
   const [currentPage, setCurrentPage] = useState(0);
 
+  // Fetcing Data
   useEffect(() => {
     const createdDate = getDateFromThePast({ days: 30 });
     const createdQuery = queryDateBuilder(">", createdDate);
@@ -92,9 +98,13 @@ export const HomePage = () => {
     [debouncedFilter.length, fetchingStatus, isIncompleteResults]
   );
 
-  const pageCount = useMemo(() => (totalCount && totalCount / 100) || 0, [
-    totalCount
-  ]);
+  const pageCount = useMemo(() => {
+    if (totalCount && totalCount > 1000) {
+      return 10;
+    } else {
+      return (totalCount && totalCount / 100) || 0;
+    }
+  }, [totalCount]);
 
   // FILTER BY LICENSE
   const isFilterByLicenseRender = useMemo(
