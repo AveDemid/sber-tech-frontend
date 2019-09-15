@@ -17,7 +17,6 @@ export const Paginator = ({
   initialPage,
   onPageChange
 }: PaginatorProps) => {
-  console.log(initialPage, "INITIAL PAGE");
   return (
     <PaginatorBox>
       <ReactPaginate
